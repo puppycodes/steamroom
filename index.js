@@ -1,5 +1,6 @@
 // Setup basic express server
 const express = require('express');
+const MongoClient = require('mongodb').MongoClient
 const assert = require('assert');
 const app = express();
 const path = require('path');
@@ -7,32 +8,27 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const port = process.env.PORT || 3000;
 
-// mongodb
-const mongo = require('mongodb').MongoClient
-const url = 'mongodb://localhost:27017'
+// Database name
 const dbName = 'steamroom';
-const client = new mongo(url);
 
-const insertDocuments = function(db, callback) {
-  // Get the documents collection
-  const collection = db.collection('documents');
-  // Insert some documents
-  collection.insertMany([
-    {a : 1}, {a : 2}, {a : 3}
-  ], function(err, result) {
-    console.log("Inserted 3 documents into the collection");
-    callback(result);
-  });
-}
+const client = new MongoClient('mongodb://localhost:27017', { useUnifiedTopology: true });
 
-client.connect(function(err) {
-  console.log("Connected to mongo");
-  const db = client.db(dbName);
+(async function() {
+  try {
+    await client.connect();
+    console.log("Connected correctly to server");
+    const db = client.db(dbName);
 
-  insertDocuments(db, function() {
+    // Insert multiple documents
+    let r = await db.collection('inserts').insertMany([{a:2}, {a:3}]);
+    assert.equal(2, r.insertedCount);
+
+    // Close connection
     client.close();
-  });
-});
+  } catch(err) {
+    console.log(err.stack);
+  }
+})();
 
 
 server.listen(port, () => {
