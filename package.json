@@ -1,0 +1,17 @@
+{
+  "name": "steamroom",
+  "version": "0.0.0",
+  "description": "Steam Room Chat",
+  "main": "index.js",
+  "author": "puppycodes",
+  "private": true,
+  "license": "BSD",
+  "dependencies": {
+    "express": "~4.17.1",
+    "mongodb": "^3.5.7",
+    "socket.io": "~2.3.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
